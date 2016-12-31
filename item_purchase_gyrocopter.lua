@@ -1,6 +1,6 @@
 -- item_purchase_gyrocopter.lua
 
-require( GetScriptDirectory().."/item_manipulation_generic" )
+require( GetScriptDirectory().."\\item_manipulation_generic" )
 
 local tableItemsToBuy = {
 	"item_tango",
@@ -36,9 +36,8 @@ local tableItemsToBuy = {
 	"item_recipe_mjollnir",
 };
 
-function ItemPurchaseThink() do
+function ItemPurchaseThink() 
 	local bot = GetBot();
-	print("Using custom items");
 
 	if ( #tableItemsToBuy == 0) then
 		bot:SetNextItemPurchaseValue( 0 );

@@ -1,44 +1,27 @@
 --item_manipulation_generic.lua
-function CycleInventory() do
-	if ( CurrentHP() < 121 ) then
-		UseItemByName( "item_faerie_fire" );
-	end
+_G._savedEvn = getfenv()
+module( "item_manipulation_generic", package.seeall )
 
-	if ( CurrentHP() < 121 and TimeSinceDamagedByAnyHero() > 5) then
-		UseItemByName( "item_flask" );
-	end
-
-	if ( CurrentMP() < 121 ) then
-		UseItemByName( "item_enchanted_mango" );
-	end
-
-	if ( ( CanSell() and GameTime() > 750 ) and not HasSpareSlot() ) then
-		ItemRotation();
-	end
-
-	TPBuy();
-end
-
-function CanSell() do
+function CanSell() 
 	local bot = GetBot();
-	if ( bot:DistanceFromFountain() == 0 or bot:DistanceFromSideShop() == 0 or bot:DistanceFromSecretShop() == 0 then 
+	if ( bot:DistanceFromFountain() == 0 or bot:DistanceFromSideShop() == 0 or bot:DistanceFromSecretShop() == 0 ) then 
 		return true;
 	end
 
 	return false;
 end
 
-function CurrentHP() do
+function CurrentHP() 
 	local bot = GetBot();
 	return ( bot:GetHealth() );
 end
 
-function CurrentMP() do
+function CurrentMP() 
 	local bot = GetBot();
 	return ( bot:GetMana() );
 end
 
-function ItemRotation() do
+function ItemRotation() 
 	local bot = GetBot();
 	local slotNum = 11;
 
@@ -108,7 +91,7 @@ function ItemRotation() do
 	end
 end
 
-function TPBuy() do
+function TPBuy() 
 	local bot = GetBot();
 	for i=0,8 do
 		local curItem = bot:GetItemInSlot( i );
@@ -137,7 +120,7 @@ function TPBuy() do
 	end
 end
 
-function UseItemByName( itemName ) do
+function UseItemByName( itemName ) 
 	bot = GetBot();
 	if not ( bot:IsUsingAbility() or bot:IsChanneling() ) then
 		for i=0,5 do
@@ -152,3 +135,22 @@ function UseItemByName( itemName ) do
 	end
 end
 
+function CycleInventory() 
+	if ( CurrentHP() < 100 ) then
+		UseItemByName( "item_faerie_fire" );
+	end
+
+	if ( CurrentHP() < 200 and TimeSinceDamagedByAnyHero() > 5) then
+		UseItemByName( "item_flask" );
+	end
+
+	if ( CurrentMP() < 121 ) then
+		UseItemByName( "item_enchanted_mango" );
+	end
+
+	if ( ( CanSell() and GameTime() > 750 ) and not HasSpareSlot() ) then
+		ItemRotation();
+	end
+
+	TPBuy();
+end
