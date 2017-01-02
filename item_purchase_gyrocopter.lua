@@ -1,44 +1,33 @@
 -- item_purchase_gyrocopter.lua
 
 require( GetScriptDirectory().."\\item_manipulation_generic" )
+local build = require( GetScriptDirectory().."\\Item_build_gyrocopter")
+local functions = require( GetScriptDirectory().."\\functions")
 
-local tableItemsToBuy = {
-	"item_tango",
-	"item_flask",
-	"item_circlet",
-	"item_recipe_wraith_band",
-	"item_slippers",
-	"item_boots",
-	"item_sobi_mask",
-	"item_ring_of_protection",
-	"item_blades_of_attack",
-	"item_blades_of_attack",
-	"item_point_booster",
-	"item_ogre_axe",
-	"item_blade_of_alacrity",
-	"item_staff_of_wizardry",
-	"item_gloves",
-	"item_mithril_hammer",
-	"item_recipe_maelstrom",
-	"item_mithril_hammer",
-	"item_ogre_axe",
-	"item_recipe_black_king_bar",
-	"item_lifesteal",
-	"item_mithril_hammer",
-	"item_recipe_satanic",
-	"item_boots",
-	"item_recipe_travel_boots",
-	"item_ultimate_orb",
-	"item_ultimate_orb",
-	"item_point_booster",
-	"item_orb_of_venom",
-	"item_hyperstone",
-	"item_recipe_mjollnir",
-};
+local tableItemsToBuy = build["items"];
+local skillsToLevel = build["skills"];
+
+local function ThinkLvlupAbility(level)
+	local bot = GetBot();
+	if ( #skillsToLevel > (25 - functions.GetHeroLevel() ) ) then
+		local ability_name = skillsToLevel[1];
+		if (ability_name ~= "-1") then
+			local ability = bot:GetAbilityByName(ability_name);
+			if ( ability:CanAbilityBeUpgraded() and ability:GetLevel() < ability:GetMaxLevel() ) then
+				local currentlevel = ability:GetLevel();
+				bot:Action_LevelAbility(skillsToLevel[1]);
+				if ability:GetLevel() > currentlevel then
+					--It worked
+					table.remove(skillsToLevel, 1);
+				end
+			end
+		end
+	end
+end
 
 function ItemPurchaseThink() 
 	local bot = GetBot();
-
+	ThinkLvlupAbility();
 	if ( #tableItemsToBuy == 0) then
 		bot:SetNextItemPurchaseValue( 0 );
 		return;
@@ -48,8 +37,18 @@ function ItemPurchaseThink()
 	bot:SetNextItemPurchaseValue( GetItemCost( sNextItem ) );
 
 	if ( bot:GetGold() >= GetItemCost( sNextItem ) ) then
-		bot:Action_PurchaseItem( sNextItem );
-		table.remove( tableItemsToBuy, 1 );
+		if (sNextItem == "item_point_booster") then
+			if (bot:GetDistanceFromSecretShop() > 0) then
+				return;
+			end
+		end
+		local success = bot:Action_PurchaseItem( sNextItem );
+		if ( success == PURCHASE_ITEM_SUCCESS ) then
+			table.remove( tableItemsToBuy, 1 );
+			if (sNextItem == "item_staff_of_wizardry") then
+				bot:Action_Chat("New Meta", true);
+			end
+		end
 	end
 	
 	CycleInventory();

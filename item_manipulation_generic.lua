@@ -1,6 +1,4 @@
 --item_manipulation_generic.lua
-_G._savedEvn = getfenv()
-module( "item_manipulation_generic", package.seeall )
 
 function CanSell() 
 	local bot = GetBot();
@@ -136,12 +134,20 @@ function UseItemByName( itemName )
 end
 
 function CycleInventory() 
+	local bot = GetBot();
+	local test;
 	if ( CurrentHP() < 100 ) then
 		UseItemByName( "item_faerie_fire" );
 	end
 
-	if ( CurrentHP() < 200 and TimeSinceDamagedByAnyHero() > 5) then
-		UseItemByName( "item_flask" );
+	if (bot:TimeSinceDamagedByAnyHero() ~= nil) then
+		if ( CurrentHP() < 200 and bot:TimeSinceDamagedByAnyHero() > 5) then
+			UseItemByName( "item_flask" );
+		end
+	else
+		if ( CurrentHP() < 200) then
+			UseItemByName( "item_flask" );
+		end
 	end
 
 	if ( CurrentMP() < 121 ) then
