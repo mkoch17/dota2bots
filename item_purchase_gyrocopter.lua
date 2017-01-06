@@ -2,14 +2,14 @@
 
 require( GetScriptDirectory().."\\item_manipulation_generic" )
 local build = require( GetScriptDirectory().."\\Item_build_gyrocopter")
-local functions = require( GetScriptDirectory().."\\functions")
+local util = require( GetScriptDirectory().."\\util")
 
 local tableItemsToBuy = build["items"];
 local skillsToLevel = build["skills"];
 
 local function ThinkLvlupAbility(level)
 	local bot = GetBot();
-	if ( #skillsToLevel > (25 - functions.GetHeroLevel() ) ) then
+	if ( #skillsToLevel > (25 - util.GetHeroLevel() ) ) then
 		local ability_name = skillsToLevel[1];
 		if (ability_name ~= "-1") then
 			local ability = bot:GetAbilityByName(ability_name);
@@ -37,10 +37,11 @@ function ItemPurchaseThink()
 	bot:SetNextItemPurchaseValue( GetItemCost( sNextItem ) );
 
 	if ( bot:GetGold() >= GetItemCost( sNextItem ) ) then
-		if (sNextItem == "item_point_booster") then
-			if (bot:GetDistanceFromSecretShop() > 0) then
-				return;
-			end
+		if (IsItemPurchasedFromSecretShop(sNextItem) and bot:DistanceFromSecretShop() > 0) then
+			return;
+		end
+		if (IsItemPurchasedFromSideShop(sNextItem) and bot:DistanceFromSideShop() <= 6000 and bot:DistanceFromSideShop() > 0) then
+			return;
 		end
 		local success = bot:Action_PurchaseItem( sNextItem );
 		if ( success == PURCHASE_ITEM_SUCCESS ) then

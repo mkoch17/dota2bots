@@ -1,4 +1,4 @@
---functions.lua
+--utils.lua
 local X = {}
 function X.GetHeroLevel()
 	local bot = GetBot();
