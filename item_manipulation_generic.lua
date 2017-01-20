@@ -160,3 +160,14 @@ function CycleInventory()
 
 	TPBuy();
 end
+
+function HasSpareSlot()
+	local bot = GetBot();
+
+	for i = 0, 5 do
+		local curItem = bot:GetItemInSlot( i );
+		if ( curItem == nil ) then 
+			return true;
+		end
+	end
+end
